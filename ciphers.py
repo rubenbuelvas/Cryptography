@@ -69,4 +69,18 @@ def playfair(message, key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     return new_message
 
 
-print(playfair("PONPNPNCVCRGXLTPVCBDCBLFRYRNBF", "IVANC", mode="decode"))
+def vigenere(message, key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    new_message = ""
+    message = message.upper()
+    letter_ids = {}
+    for i in range(len(alphabet)):
+        letter_ids[alphabet[i]] = i
+    for i in range(len(message)):
+        if mode == "encode":
+            new_message += alphabet[(letter_ids[message[i]] + letter_ids[key[i%len(key)]])%len(alphabet)]
+        elif mode == "decode":
+            new_message += alphabet[(letter_ids[message[i]] - letter_ids[key[i%len(key)]])%len(alphabet)]    
+    return new_message
+
+
+print(vigenere("YYCFLFOOYPRTJGORLNFTUZEPHPAYNN", "UNAL", mode="decode"))
