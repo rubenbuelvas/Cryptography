@@ -1,11 +1,22 @@
 import copy
+import numpy as np
+from egcd import egcd
 
-def caesar(message, key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+
+def get_alphabet_indexes(alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    dictionary = {}
+    for i in range(len(alphabet)):
+        dictionary[alphabet[i]] = i
+    return dictionary
+
+
+def caesar(message, key=7, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
     new_message = ""
+    message = message.upper()
     for i in range(len(message)):
         found = False
         for j in range(len(alphabet)):
-            if message[i].upper() == alphabet[j]:
+            if message[i] == alphabet[j]:
                 found = True
                 if mode == "decode":
                     new_message += alphabet[(j-key)%len(alphabet)]
@@ -16,8 +27,11 @@ def caesar(message, key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
     return new_message
 
 
-def playfair(message, key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+def playfair(message, key="UNAL", mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
     new_message = ""
+    message = message.upper()
+    message = message.replace("J", "I")
+    message = list(message)
     key = key.upper()
     matrix = [list(key)]
     my_row = []
@@ -27,9 +41,6 @@ def playfair(message, key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ")
             if len(my_row) == 5:
                 matrix.append(my_row)
                 my_row = []
-    message = message.upper()
-    message = message.replace("J", "I")
-    message = list(message)
     my_message = copy.deepcopy(message)
     for i in range(len(message)):
         if message[i] not in alphabet:
@@ -69,18 +80,53 @@ def playfair(message, key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     return new_message
 
 
-def vigenere(message, key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+def vigenere(message, key="UNAL", mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
     new_message = ""
     message = message.upper()
-    letter_ids = {}
-    for i in range(len(alphabet)):
-        letter_ids[alphabet[i]] = i
+    letter_ids = get_alphabet_indexes(alphabet)
     for i in range(len(message)):
-        if mode == "encode":
-            new_message += alphabet[(letter_ids[message[i]] + letter_ids[key[i%len(key)]])%len(alphabet)]
-        elif mode == "decode":
-            new_message += alphabet[(letter_ids[message[i]] - letter_ids[key[i%len(key)]])%len(alphabet)]    
+        if message[i] in letter_ids:
+            if mode == "encode":
+                new_message += alphabet[(letter_ids[message[i]] + letter_ids[key[i%len(key)]])%len(alphabet)]
+            elif mode == "decode":
+                new_message += alphabet[(letter_ids[message[i]] - letter_ids[key[i%len(key)]])%len(alphabet)]    
+        else:
+            new_message += message[i]
     return new_message
 
 
-print(vigenere("YYCFLFOOYPRTJGORLNFTUZEPHPAYNN", "UNAL", mode="decode"))
+matrix_key = np.matrix([[3,3],[2,5]])
+def hill(message, key=matrix_key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    new_message = ""
+    message = message.upper()
+    letter_ids = get_alphabet_indexes()
+    det = int(np.round(np.linalg.det(key)))
+    det_inv = egcd(det, len(alphabet))[1] % len(alphabet)
+    matrix_modulus_inv = det_inv * np.round(det*np.linalg.inv(key)).astype(int) % len(alphabet)
+    message_in_numbers = []
+    for letter in message:
+        message_in_numbers.append(letter_ids[letter])
+    split_P = [message_in_numbers[i:i + int(key.shape[0])] for i in range(0, len(message_in_numbers), int(key.shape[0]))]
+    if mode == "encode":
+        for P in split_P:
+            P = np.transpose(np.asarray(P))[:,np.newaxis]
+            while P.shape[0] != key.shape[0]:
+                P = np.append(P, letter_to_index[' '])[:,np.newaxis]
+            numbers = np.dot(key, P) % len(alphabet)
+            n = numbers.shape[0] 
+            for idx in range(n):
+                number = int(numbers[idx, 0])
+                new_message += alphabet[number]
+    elif mode == "decode":
+        for P in split_P:
+            P = np.transpose(np.asarray(P))[:,np.newaxis]
+            numbers = np.dot(matrix_modulus_inv, P) % len(alphabet)
+            n = numbers.shape[0]
+            for idx in range(n):
+                number = int(numbers[idx, 0])
+                new_message += alphabet[number]
+    return new_message
+
+
+
+print(hill("HIAT", mode="decode"))
