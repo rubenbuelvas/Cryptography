@@ -158,7 +158,7 @@ print(hill("52A1EB76B704BDA", key=matrix_key, mode="decode", alphabet="012345678
 matrix_key = np.matrix([[1, 3, 8, 15, 8],[3, 1, 7, 7, 3], [6, 3, 11, 5, 6], [10, 7, 1, 2, 3], [3, 14, 7, 12, 1]])
 print(hill("5DBC5938089CE07", key=matrix_key, mode="encode", alphabet="0123456789ABCDEF"))
 """
-def runi(alphabet="RDMESAENSARAJPRTOLARAELESECNICNVIAAS"):
+"""def runi(alphabet="RDMESAENSARAJPRTOLARAELESECNICNVIAAS"):
     matrix = []
     c = 0
     for i in range(4):
@@ -197,5 +197,37 @@ for i in range(100000):
     for j in range(4): 
         a[j][column] = my_list[j]
     res = get_result(a)
-    if " ATACAR " in res:
-        print(res)
+    if " ROTA " in res:
+        print(res)"""
+
+matrix_key2 = np.array([[1, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0]])
+def grilla_giratoria(message, key=matrix_key2, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    new_message = ""
+    message = list(message)
+    size = len(key)
+    if mode == "encode":
+        new_matrix = np.zeros((size, size), dtype=str)
+        while len(message) > 0:
+            for j in range(size):
+                for k in range(size):
+                    if key.item(j, k) == 1:
+                            new_matrix[j, k] = message.pop(0)
+                key = np.rot90(key, k=1, axes=(0, 1))
+        for i in range(size):
+            for j in range(size):
+                new_message += new_matrix[i][j]
+    elif mode == "decode":
+        encoded_matrix = np.zeros((size, size), dtype=str)
+        for i in range(size):
+            for j in range(size):
+                encoded_matrix[i][j] = message.pop(0)
+        while len(new_message) < size*size:
+            for i in range(size):
+                for j in range(size):
+                    if key[i][j] == 1:
+                        new_message += encoded_matrix[i][j]
+            key = np.rot90(key, k=1, axes=(0, 1))
+    return new_message
+
+
+print(grilla_giratoria(message="JKTDSAATWIAMCNAT", mode="decode"))
