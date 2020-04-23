@@ -1,9 +1,10 @@
 import copy
 import numpy as np
 from egcd import egcd
+import random
 
 
-def get_alphabet_indexes(alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+def get_alphabet_indexes(alphabet):
     dictionary = {}
     for i in range(len(alphabet)):
         dictionary[alphabet[i]] = i
@@ -99,7 +100,7 @@ matrix_key = np.matrix([[3,3],[2,5]])
 def hill(message, key=matrix_key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
     new_message = ""
     message = message.upper()
-    letter_ids = get_alphabet_indexes()
+    letter_ids = get_alphabet_indexes(alphabet)
     det = int(np.round(np.linalg.det(key)))
     det_inv = egcd(det, len(alphabet))[1] % len(alphabet)
     matrix_modulus_inv = det_inv * np.round(det*np.linalg.inv(key)).astype(int) % len(alphabet)
@@ -127,6 +128,74 @@ def hill(message, key=matrix_key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTU
                 new_message += alphabet[number]
     return new_message
 
+"""alphabet="ABCDEFGHIKLMNOPQRSTUVWXYZ"
+results=[]
+for i in alphabet:
+    for j in alphabet:
+        for k in alphabet:
+            for l in alphabet:
+                for m in alphabet:
+                    my_key = i + j + k + l + m
+                    try:
+                        res = playfair("FRRAQVPWGLVBTPGLBEXPSVCVRY", key=my_key, mode="decode")
+                        if "ESPIA" in res and "W" not in res and "K" not in res:
+                            results.append(res)
+                            print(res)
+                    except:
+                        pass
 
 
-print(hill("HIAT", mode="decode"))
+print(len(results))
+for i in results:
+    print(i)"""
+
+"""print("yo")
+matrix_key = np.matrix([[1, 3, 8, 15, 8],[3, 1, 7, 7, 3], [6, 3, 11, 5, 6], [10, 7, 1, 2, 3], [3, 14, 7, 12, 1]])
+print(hill("0C8F72E7F55EE1C", key=matrix_key, mode="decode", alphabet="0123456789ABCDEF"))
+print("runi")
+matrix_key = np.matrix([[1, 1, 4, 7, 8],[11, 0, 1, 12, 2], [11, 1, 13, 14, 12], [14, 5, 14, 7, 15], [11, 12, 12, 3, 7]])
+print(hill("52A1EB76B704BDA", key=matrix_key, mode="decode", alphabet="0123456789ABCDEF"))
+matrix_key = np.matrix([[1, 3, 8, 15, 8],[3, 1, 7, 7, 3], [6, 3, 11, 5, 6], [10, 7, 1, 2, 3], [3, 14, 7, 12, 1]])
+print(hill("5DBC5938089CE07", key=matrix_key, mode="encode", alphabet="0123456789ABCDEF"))
+"""
+def runi(alphabet="RDMESAENSARAJPRTOLARAELESECNICNVIAAS"):
+    matrix = []
+    c = 0
+    for i in range(4):
+        matrix.append([])
+        for j in range(9):
+            matrix[i].append(alphabet[c%len(alphabet)])
+            c+=1
+    print(matrix)
+    return matrix
+
+def get_result(matrix):
+    string = ""
+    c = 0
+    for i in matrix:
+        for j in i:
+            string += j
+            if c == 10:
+                string += " "
+            elif c == 18:
+                string += " "
+            elif c == 22:
+                string += " "
+            elif c == 28:
+                string += " "
+            c += 1
+    return string
+
+a = runi()
+for i in range(100000):
+    column = random.randint(0, 8)
+    letter = random.randint(0, 3)
+    tmp = a[0][column]
+    my_list = []
+    for j in range(4): 
+        my_list.append(a[(letter+j)%4][column])
+    for j in range(4): 
+        a[j][column] = my_list[j]
+    res = get_result(a)
+    if " ATACAR " in res:
+        print(res)
