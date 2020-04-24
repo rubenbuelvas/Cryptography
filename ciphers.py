@@ -95,111 +95,6 @@ def vigenere(message, key="UNAL", mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTU
             new_message += message[i]
     return new_message
 
-
-matrix_key = np.matrix([[3,3],[2,5]])
-def hill(message, key=matrix_key, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
-    new_message = ""
-    message = message.upper()
-    letter_ids = get_alphabet_indexes(alphabet)
-    det = int(np.round(np.linalg.det(key)))
-    det_inv = egcd(det, len(alphabet))[1] % len(alphabet)
-    matrix_modulus_inv = det_inv * np.round(det*np.linalg.inv(key)).astype(int) % len(alphabet)
-    message_in_numbers = []
-    for letter in message:
-        message_in_numbers.append(letter_ids[letter])
-    split_P = [message_in_numbers[i:i + int(key.shape[0])] for i in range(0, len(message_in_numbers), int(key.shape[0]))]
-    if mode == "encode":
-        for P in split_P:
-            P = np.transpose(np.asarray(P))[:,np.newaxis]
-            while P.shape[0] != key.shape[0]:
-                P = np.append(P, letter_to_index[' '])[:,np.newaxis]
-            numbers = np.dot(key, P) % len(alphabet)
-            n = numbers.shape[0] 
-            for idx in range(n):
-                number = int(numbers[idx, 0])
-                new_message += alphabet[number]
-    elif mode == "decode":
-        for P in split_P:
-            P = np.transpose(np.asarray(P))[:,np.newaxis]
-            numbers = np.dot(matrix_modulus_inv, P) % len(alphabet)
-            n = numbers.shape[0]
-            for idx in range(n):
-                number = int(numbers[idx, 0])
-                new_message += alphabet[number]
-    return new_message
-
-"""alphabet="ABCDEFGHIKLMNOPQRSTUVWXYZ"
-results=[]
-for i in alphabet:
-    for j in alphabet:
-        for k in alphabet:
-            for l in alphabet:
-                for m in alphabet:
-                    my_key = i + j + k + l + m
-                    try:
-                        res = playfair("FRRAQVPWGLVBTPGLBEXPSVCVRY", key=my_key, mode="decode")
-                        if "ESPIA" in res and "W" not in res and "K" not in res:
-                            results.append(res)
-                            print(res)
-                    except:
-                        pass
-
-
-print(len(results))
-for i in results:
-    print(i)"""
-
-"""print("yo")
-matrix_key = np.matrix([[1, 3, 8, 15, 8],[3, 1, 7, 7, 3], [6, 3, 11, 5, 6], [10, 7, 1, 2, 3], [3, 14, 7, 12, 1]])
-print(hill("0C8F72E7F55EE1C", key=matrix_key, mode="decode", alphabet="0123456789ABCDEF"))
-print("runi")
-matrix_key = np.matrix([[1, 1, 4, 7, 8],[11, 0, 1, 12, 2], [11, 1, 13, 14, 12], [14, 5, 14, 7, 15], [11, 12, 12, 3, 7]])
-print(hill("52A1EB76B704BDA", key=matrix_key, mode="decode", alphabet="0123456789ABCDEF"))
-matrix_key = np.matrix([[1, 3, 8, 15, 8],[3, 1, 7, 7, 3], [6, 3, 11, 5, 6], [10, 7, 1, 2, 3], [3, 14, 7, 12, 1]])
-print(hill("5DBC5938089CE07", key=matrix_key, mode="encode", alphabet="0123456789ABCDEF"))
-"""
-"""def runi(alphabet="RDMESAENSARAJPRTOLARAELESECNICNVIAAS"):
-    matrix = []
-    c = 0
-    for i in range(4):
-        matrix.append([])
-        for j in range(9):
-            matrix[i].append(alphabet[c%len(alphabet)])
-            c+=1
-    print(matrix)
-    return matrix
-
-def get_result(matrix):
-    string = ""
-    c = 0
-    for i in matrix:
-        for j in i:
-            string += j
-            if c == 10:
-                string += " "
-            elif c == 18:
-                string += " "
-            elif c == 22:
-                string += " "
-            elif c == 28:
-                string += " "
-            c += 1
-    return string
-
-a = runi()
-for i in range(100000):
-    column = random.randint(0, 8)
-    letter = random.randint(0, 3)
-    tmp = a[0][column]
-    my_list = []
-    for j in range(4): 
-        my_list.append(a[(letter+j)%4][column])
-    for j in range(4): 
-        a[j][column] = my_list[j]
-    res = get_result(a)
-    if " ROTA " in res:
-        print(res)"""
-
 matrix_key2 = np.array([[1, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0]])
 def grilla_giratoria(message, key=matrix_key2, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
     new_message = ""
@@ -229,5 +124,110 @@ def grilla_giratoria(message, key=matrix_key2, mode="decode", alphabet="ABCDEFGH
             key = np.rot90(key, k=1, axes=(0, 1))
     return new_message
 
+#P1
+def hex_item_to_dec(a):
+    b = ''
+    if a == 'A':
+        b = 10
+    elif a == 'B':
+        b = 11
+    elif a == 'C':
+        b = 12
+    elif a == 'D':
+        b = 13
+    elif a == 'E':
+        b = 14
+    elif a == 'F':
+        b = 15
+    else:
+        b = int(a)
+    return b 
 
-print(grilla_giratoria(message="JKTDSAATWIAMCNAT", mode="decode"))
+def custom_op(a, b, op="sum"):
+    ans = ''
+    sum_op = np.matrix([['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
+                        ['1', '0', '0', '2', '5', '4', '7', '6', '9', '8', 'B', 'A', 'D', 'C', 'F', 'E'],
+                        ['2', '3', '0', '1', '6', '7', '4', '5', 'A', 'B', '8', '9', 'E', 'F', 'C', 'D'],
+                        ['3', '2', '1', '0', '7', '6', '5', '4', 'B', 'A', '9', '8', 'F', 'E', 'D', 'C'],
+                        ['4', '5', '6', '7', '0', '1', '2', '3', 'C', 'D', 'E', 'F', '8', '9', 'A', 'B'],
+                        ['5', '4', '7', '6', '1', '0', '3', '2', 'D', 'C', 'F', 'E', '9', '8', 'B', 'A'],
+                        ['6', '7', '4', '5', '2', '3', '0', '1', 'E', 'F', 'C', 'D', 'A', 'B', '8', '9'],
+                        ['7', '6', '5', '4', '3', '2', '1', '0', 'F', 'E', 'D', 'C', 'B', 'A', '9', '8'],
+                        ['8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6', '7'],
+                        ['9', '8', 'B', 'A', 'D', 'C', 'F', 'E', '1', '0', '3', '2', '5', '4', '7', '6'],
+                        ['A', 'B', '8', '9', 'E', 'F', 'C', 'D', '2', '3', '0', '1', '6', '7', '4', '5'],
+                        ['B', 'A', '9', '8', 'F', 'E', 'D', 'C', '3', '2', '1', '0', '7', '6', '5', '4'],
+                        ['C', 'D', 'E', 'F', '8', '9', 'A', 'B', '4', '5', '6', '7', '0', '1', '2', '3'],
+                        ['D', 'C', 'F', 'E', '9', '8', 'B', 'A', '5', '4', '7', '6', '1', '0', '3', '2'],
+                        ['E', 'F', 'C', 'D', 'A', 'B', '8', '9', '6', '7', '4', '5', '2', '3', '0', '1'],
+                        ['F', 'E', 'D', 'C', 'B', 'A', '9', '8', '7', '6', '5', '4', '3', '2', '1', '0']
+    ])
+
+    mul_op = np.matrix([['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+                        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
+                        ['0', '2', '4', '6', '8', 'A', 'C', 'E', '3', '1', '7', '5', 'B', '9', 'F', 'D'],
+                        ['0', '3', '6', '5', 'C', 'F', 'A', '9', 'B', '8', 'D', 'E', '7', '4', '1', '2'],
+                        ['0', '4', '8', 'C', '3', '7', 'B', 'F', '6', '2', 'E', 'A', '5', '1', 'D', '9'],
+                        ['0', '5', 'A', 'F', '7', '2', 'D', '8', 'E', 'B', '4', '1', '9', 'C', '3', '6'],
+                        ['0', '6', 'C', 'A', 'B', 'D', '7', '1', '5', '3', '9', 'F', 'E', '8', '2', '4'],
+                        ['0', '7', 'E', '9', 'F', '8', '1', '6', 'D', 'A', '3', '4', '2', '5', 'C', 'B'],
+                        ['0', '8', '3', 'B', '6', 'E', '5', 'D', 'C', '4', 'F', '7', 'A', '2', '9', '1'],
+                        ['0', '9', '1', '8', '2', 'B', '3', 'A', '4', 'D', '5', 'C', '6', 'F', '7', 'E'],
+                        ['0', 'A', '7', 'D', 'E', '4', '9', '3', 'F', '5', '8', '2', '1', 'B', '6', 'C'],
+                        ['0', 'B', '5', 'E', 'A', '1', 'F', '4', '7', 'C', '2', '9', 'D', '6', '8', '3'],
+                        ['0', 'C', 'B', '7', '5', '9', 'E', '2', 'A', '6', '1', 'D', 'F', '3', '4', '8'],
+                        ['0', 'D', '9', '4', '1', 'C', '8', '5', '2', 'F', 'B', '6', '3', 'E', 'A', '7'],
+                        ['0', 'E', 'F', 'A', 'D', '3', '2', 'C', '9', '7', '6', '8', '4', 'A', 'B', '5'],
+                        ['0', 'F', 'D', '2', '9', '6', '4', 'B', '1', 'E', 'C', '3', '8', '7', '5', 'A']
+    ])
+
+    if op == "sum":
+        ans = sum_op[hex_item_to_dec(a), hex_item_to_dec(b)]
+    elif op == "mul":
+        ans = mul_op[hex_item_to_dec(a), hex_item_to_dec(b)]
+    return ans
+
+#Encontrar la inversa
+matrix_key3 = np.array([['1', '3', '8', 'F', '8'],
+                         ['3', '1', '7', '7', '3'],
+                         ['6', '3', 'B', '5', '6'],
+                         ['A', '7', '1', '2', '3'],
+                         ['3', 'E', '7', 'C', '1']
+])
+
+def my_hill(message="", key=matrix_key3, mode="decode", alphabet="0123456789ABCDEF"):
+    result = ""
+    new_message = ""
+    message = []
+    for i in range(15):
+        #Aleatorios, toca hacer convertidor de dec a hex (NO el de python)
+        message.append(alphabet[random.randint(0, 15)])
+    test_message = "".join(message)
+    message = list(message)
+    message = [message[0:5], message[5:10], message[10:15]]
+    for submessage in message:
+        new_submessage = np.zeros((5), dtype=str)
+        for i in range(len(submessage)): #new one
+            for j in range(len(submessage)): #old one
+                if new_submessage[i] == "":
+                    new_submessage[i] = custom_op(submessage[j], key.item((i, j)), "mul")
+                else:
+                    new_submessage[i] = custom_op(new_submessage[i], custom_op(submessage[j], key[i][j], "mul"), "sum")
+        new_message += "".join(new_submessage)
+    if new_message == "0C8F72E7F55EE1C":
+        result = test_message
+    return result
+
+
+
+#Brute force grilla giratoria
+#[Cries in failure]
+
+#hill
+#Muy complejo para hacer con fuerza bruta
+for i in range(100000):
+    ans = my_hill()
+    if i%1000 == 0:
+        print(i) 
+    if not ans == "":
+        print(ans)
