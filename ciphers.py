@@ -96,6 +96,23 @@ def vigenere(message, key="UNAL", mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTU
     return new_message
 
 matrix_key2 = np.array([[1, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0]])
+
+def key_generator():
+    key = np.zeros((6, 6), dtype=str)
+    rotations = np.zeros((6,6), dtype=str)
+    random_row = random.randint(0,5)
+    random_col = random.randint(0,5)
+    for i in range(9):
+        while(rotations.item(random_row,random_col)):
+            random_row = random.randint(0,5)
+            random_col = random.randint(0,5)
+        key[random_row,random_col] = 1
+        rotations[random_row,random_col] = 1
+        for j in range(4):
+            rotations = np.rot90(rotations,k=1,axes=(0,1))
+            rotations[random_row,random_col] = 1
+    return key
+
 def grilla_giratoria(message, key=matrix_key2, mode="decode", alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
     new_message = ""
     message = list(message)
@@ -119,7 +136,7 @@ def grilla_giratoria(message, key=matrix_key2, mode="decode", alphabet="ABCDEFGH
         while len(new_message) < size*size:
             for i in range(size):
                 for j in range(size):
-                    if key[i][j] == 1:
+                    if key.item((i, j)):
                         new_message += encoded_matrix[i][j]
             key = np.rot90(key, k=1, axes=(0, 1))
     return new_message
@@ -195,6 +212,8 @@ matrix_key3 = np.array([['1', '3', '8', 'F', '8'],
                          ['3', 'E', '7', 'C', '1']
 ])
 
+
+
 def my_hill(message="", key=matrix_key3, mode="decode", alphabet="0123456789ABCDEF"):
     result = ""
     new_message = ""
@@ -221,13 +240,17 @@ def my_hill(message="", key=matrix_key3, mode="decode", alphabet="0123456789ABCD
 
 
 #Brute force grilla giratoria
-#[Cries in failure]
+for i in range(1000):
+    ans = grilla_giratoria("RDMESAENSARAJPRTOLARAELESECNICNVIAAS", key=key_generator())
+    if "ATACAR" in ans:
+        print(ans) 
 
 #hill
 #Muy complejo para hacer con fuerza bruta
-for i in range(100000):
+for i in range(500000):
     ans = my_hill()
     if i%1000 == 0:
         print(i) 
+    
     if not ans == "":
         print(ans)
