@@ -240,17 +240,28 @@ def my_hill(message="", key=matrix_key3, mode="decode", alphabet="0123456789ABCD
 
 
 #Brute force grilla giratoria
-for i in range(1000):
+for i in range(10000):
     ans = grilla_giratoria("RDMESAENSARAJPRTOLARAELESECNICNVIAAS", key=key_generator())
-    if "ATACAR" in ans:
+    ans = list(ans)
+    ans.insert(10, " ")
+    ans.insert(10+9, " ")
+    ans.insert(10+8+6, " ")
+    ans.insert(10+8+4+9, " ")
+    ans = "".join(ans)
+    if " PARA " in ans:
         print(ans) 
+#MESASECNIA RELEIVAS EAAR ATNCAR DSNJPROL
+#MENSJECNAA TARLEVIS DAAR ENICAR ESRPOLAS
+#DSRPRARNIE NAESCNAS EAOL ELEVAR MSAAJTIC
+#DAARAENCAR ESNPOLES MESJ TECNAA RARLIVIS
 
 #hill
 #Muy complejo para hacer con fuerza bruta
-for i in range(500000):
+"""for i in range(500000):
     ans = my_hill()
     if i%1000 == 0:
         print(i) 
     
     if not ans == "":
         print(ans)
+"""
