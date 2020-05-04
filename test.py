@@ -1,4 +1,5 @@
 from util import *
+from DES import *
 
-print(from_ascii_binary("010000010100001001000011"))
-print(to_ascii_binary("ABC"))
+a = [0, 1, 2, 3, 4, 5]
+print(a[1:3])
