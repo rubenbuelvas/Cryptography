@@ -15,3 +15,15 @@ def from_ascii_binary(message):
     return ans
 
 
+def xor(a, b):
+    c = ""
+    for i in range(len(a)):
+        if a == "0" and b == "0":
+            c += "0"
+        elif a == "0" and b == "1":
+            c += "1"
+        elif a == "1" and b == "0":
+            c += "1"
+        elif a == "1" and b == "0":
+            c += "0"
+    return c
