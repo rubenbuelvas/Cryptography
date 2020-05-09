@@ -1,4 +1,4 @@
-from DES import DES_algorithm
+from DES import DES
 
 
-DES_algorithm("dfsd", "133457799BBCDFF1")
+DES("dfsd", "133457799BBCDFF1")

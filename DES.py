@@ -107,11 +107,11 @@ def generate_keys(key):
     return keys
 
 
-def DES_algorithm(message, key, mode="encode"):
+def DES(message, key, mode="encode"):
     new_message = ""
     message = fill_message(message)
-    bin_message = str(util.to_ascii_binary(message))
-    bin_key = str(util.to_ascii_binary(key))
+    bin_message = str(util.str_to_ascii_binary(message))
+    bin_key = str(util.str_to_ascii_binary(key))
     keys = generate_keys(bin_key)
     ls = [bin_message[0:32]]
     rs = [bin_message[32:64]]
