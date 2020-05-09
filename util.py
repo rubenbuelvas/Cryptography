@@ -49,13 +49,44 @@ def xor(a, b):
 
 
 def bin_to_hex(a):
-    b = hex(int(a, 2))
-    b = b[2:]
+    b = hex(int(a, 2))[2:]
     if len(b) == 1:
         b = "0" + b
     return b
 
+
 def hex_to_bin(a):
-    b = bin(int(a, 16))
-    b = b[2:]
+    b = bin(int(a, 16))[2:]
+    b = ("0"*8-len(b)) + b
+    return b
+
+
+def dec_to_bin(a):
+    b = ""
+    a = int(a)
+    b = bin(a)[2:]
+    b = ("0"*8-len(b)) + b
+    return b
+
+
+def bin_to_dec(a):
+    b = 0
+    a = "0b" + a
+    b = int(a, 2)
+    return b
+
+
+def dec_to_hex(a):
+    b = ""
+    a = int(a)
+    b = hex(a)[2:]
+    if len(b) == 1:
+        b = "0" + b
+    return b
+
+
+def hex_to_dec(a):
+    b = 0
+    a = "0x" + a
+    b = int(a, 16)
     return b
