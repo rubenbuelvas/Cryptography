@@ -37,13 +37,13 @@ def ascii_hex_to_str(message):
 def xor(a, b):
     c = ""
     for i in range(len(a)):
-        if a == "0" and b == "0":
+        if a[i] == "0" and b[i] == "0":
             c += "0"
-        elif a == "0" and b == "1":
+        elif a[i] == "0" and b[i] == "1":
             c += "1"
-        elif a == "1" and b == "0":
+        elif a[i] == "1" and b[i] == "0":
             c += "1"
-        elif a == "1" and b == "0":
+        elif a[i] == "1" and b[i] == "0":
             c += "0"
     return c
 

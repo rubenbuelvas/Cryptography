@@ -106,7 +106,7 @@ def generate_keys(key):
         keys.append(new_key)
     return keys
 
-
+# TODO
 def DES(message, key, mode="encode"):
     new_message = ""
     message = fill_message(message)
@@ -118,5 +118,5 @@ def DES(message, key, mode="encode"):
     for i in range(16):
         li = rs[i]
         
-    new_message = util.from_ascii_binary(bin_message)
+    new_message = util.ascii_binary_to_str(bin_message)
     return new_message

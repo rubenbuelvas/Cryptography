@@ -1,4 +1,5 @@
 from DES import DES
+from AES import AES
 
 
-DES("dfsd", "133457799BBCDFF1")
+a = AES("lsdfkngsldfkngsdflksadnfgklasndf", "")
