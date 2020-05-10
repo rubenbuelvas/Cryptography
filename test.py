@@ -1,5 +1,5 @@
 from DES import DES
-from AES import AES
+from AES import AEStest
 
 
-a = AES("lsdfkngsldfkngsdflksadnfgklasndf", "")
+AEStest()

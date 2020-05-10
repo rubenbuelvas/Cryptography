@@ -43,7 +43,7 @@ def xor(a, b):
             c += "1"
         elif a[i] == "1" and b[i] == "0":
             c += "1"
-        elif a[i] == "1" and b[i] == "0":
+        elif a[i] == "1" and b[i] == "1":
             c += "0"
     return c
 
@@ -57,7 +57,7 @@ def bin_to_hex(a):
 
 def hex_to_bin(a):
     b = bin(int(a, 16))[2:]
-    b = ("0"*8-len(b)) + b
+    b = ("0"*(8-len(b))) + b
     return b
 
 
@@ -65,7 +65,7 @@ def dec_to_bin(a):
     b = ""
     a = int(a)
     b = bin(a)[2:]
-    b = ("0"*8-len(b)) + b
+    b = ("0"*(8-len(b))) + b
     return b
 
 
@@ -87,6 +87,7 @@ def dec_to_hex(a):
 
 def hex_to_dec(a):
     b = 0
+    a = str(a)
     a = "0x" + a
     b = int(a, 16)
     return b
