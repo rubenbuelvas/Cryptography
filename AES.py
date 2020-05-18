@@ -32,9 +32,8 @@ def matrix_mul(a, b):
 
 
 # Subtitute bytes
-def SB(byte):
+def SB(bytes):
     new_byte = ""
-    byte = util.hex_to_dec(byte)
     sb_matrix = np.matrix([["63", "7c", "77", "7b", "f2", "6b", "6f", "c5", "30", "01", "67", "2b", "fe", "d7", "ab", "76"], 
                            ["ca", "82", "c9", "7d", "fa", "59", "47", "f0", "ad", "d4", "a2", "af", "9c", "a4", "72", "c0"], 
                            ["b7", "fd", "93", "26", "36", "3f", "f7", "cc", "34", "a5", "e5", "f1", "71", "d8", "31", "15"], 
@@ -52,7 +51,11 @@ def SB(byte):
                            ["e1", "f8", "98", "11", "69", "d9", "8e", "94", "9b", "1e", "87", "e9", "ce", "55", "28", "df"], 
                            ["8c", "a1", "89", "0d", "bf", "e6", "42", "68", "41", "99", "2d", "0f", "b0", "54", "bb", "16"] 
     ])
-    new_byte = util.dec_to_hex(new_byte)
+    for i in range(int(len(bytes)/2)):
+        my_byte = bytes[i*2:i*2+i+2]
+        y = util.hex_to_dec(my_byte[0])
+        x = util.hex_to_dec(my_byte[1])
+        new_byte += sb_matrix[y, x]
     return new_byte
 
 
@@ -80,7 +83,7 @@ def MC(bytes):
     return new_bytes
 
 
-# Key operation
+# Add Round Key
 def ARK(message, key):
     new_message = ""
     message = util.hex_to_bin(message)
@@ -108,7 +111,7 @@ def round_constant_generator():
 
 def key_generator(key):
     keys = []
-    key = util.str_to_ascii_hex(key)
+    #key = util.str_to_ascii_hex(key)
     key = list(key)
     for i in range(4):
         wi = []
@@ -168,9 +171,4 @@ def AES(message, key, mode="encode"):
 
     
 def AEStest():
-    b = np.matrix([ ["02", "e3", "1d", "45"],
-                    ["c1", "19", "91", "e2"],
-                    ["96", "f7", "5a", "89"],
-                    ["53", "05", "1f", "28"] 
-    ])
-    print(MC(b))
+    print(SB("36"))
