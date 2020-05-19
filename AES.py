@@ -232,7 +232,6 @@ def AES128(message, key, mode="encode", mes_is_hex=False, key_is_hex=False):
         round_message = SR(round_message)
         if i < 10:
             round_message = MC(round_message)
-            print(":D")
         round_key = np.matrix(keys[i*4:i*4+4]).transpose()
         states.append(ARK(matrix_to_text(round_message), matrix_to_text(round_key)))
 
