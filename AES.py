@@ -1,13 +1,15 @@
 import numpy as np
+import copy
 import util
 from gf256 import GF256
 
 # Galois field 2^8 operations
 def add(a, b):
     c = ""
-    a = util.hex_to_dec(a)
-    b = util.hex_to_dec(b)
-    c = util.bin_to_hex(str(GF256(a)+GF256(b))[8:16])
+    a = util.hex_to_bin(a)
+    b = util.hex_to_bin(b)
+    c = util.xor(a, b)
+    c = util.bin_to_hex(c)
     return c
 
 
@@ -51,6 +53,7 @@ def SB(bytes):
                            ["e1", "f8", "98", "11", "69", "d9", "8e", "94", "9b", "1e", "87", "e9", "ce", "55", "28", "df"], 
                            ["8c", "a1", "89", "0d", "bf", "e6", "42", "68", "41", "99", "2d", "0f", "b0", "54", "bb", "16"] 
     ])
+    bytes = "".join(bytes)
     for i in range(int(len(bytes)/2)):
         my_byte = bytes[i*2:i*2+i+2]
         y = util.hex_to_dec(my_byte[0])
@@ -94,24 +97,27 @@ def ARK(message, key):
 
 
 # T transformation
-def T(key):
-    new_key = key[1:]
-    new_key.append(key[0])
+def T(key, constant):
+    new_key = copy.copy(key)
+    item = new_key.pop(0)
+    new_key.append(item)
     new_key = SB(new_key)
+    y0 = new_key[:2]
+    y0 = add(y0, constant)
+    new_key = y0 + new_key[2:]
     return new_key
 
 
 def round_constant_generator():
-    constants = []
-    c = 0
-    for i in range(10):
-        pass
+    constants = ["01", "02", "04", "08", "10", "20", "40", "80", "1B", "36"]
     return constants
 
 
-def key_generator(key):
+def key_generator(key, is_hex=False):
     keys = []
-    #key = util.str_to_ascii_hex(key)
+    constants = round_constant_generator()
+    if not is_hex:
+        key = util.str_to_ascii_hex(key)
     key = list(key)
     for i in range(4):
         wi = []
@@ -121,54 +127,61 @@ def key_generator(key):
             wi.append(item)
         keys.append(wi)
     for i in range(4, 44):
+        wi = []
+        key_a = "".join(keys[i-4])
         if i%4 == 0:
-            wi = T(add(keys[i-4], keys[i-1]))
+            key_b = T(keys[i-1], constants.pop(0))
         else:
-            wi = add(keys[i-4], keys[i-1])
+            key_b = "".join(keys[i-1])
+        wi_raw = add(key_a, key_b)
+        wi_raw = list(wi_raw)
+        for j in range(4):
+            item = wi_raw.pop(0)
+            item += wi_raw.pop(0)
+            wi.append(item)
+        keys.append(wi)
+        if i%4 == 0:
+            print(wi)
     return keys
 
 
-def AES(message, key, mode="encode"):
+def AES128(message, key, mode="encode"):
     new_message = ""
     keys = key_generator(key)
-    constants = round_constant_generator()
     states = []
 
-    for i in range(int(len(message)/16)):
-        new_local_message = ""
-        local_states = []
+    # Getting hex matrix
+    if len(message) < 16:
+        message += "x"*(16-len(message))
+    message = util.str_to_ascii_hex(message)
+    message = list(message)
+    message_matrix = []
+    for j in range(4):
+        row = []
+        for k in range(4):
+            item = message.pop(0)
+            item += message.pop(0)
+            row.append(item)
+        message_matrix.append(row)
+    message_matrix = (np.matrix(message_matrix).transpose())
 
-        # Getting hex matrix of chunk 
-        local_message = message[i*16:i*16+16]
-        if len(local_message) < 16:
-            local_message += "x"*(16-len(local_message))
-        local_message = util.str_to_ascii_hex(local_message)
-        local_message = list(local_message)
-        message_matrix = []
-        for j in range(4):
-            row = []
-            for k in range(4):
-                item = local_message.pop(0)
-                item += local_message.pop(0)
-                row.append(item)
-            message_matrix.append(row)
-        message_matrix = (np.matrix(message_matrix).transpose())
-
-        # Initial round
+    # Initial round
 
 
-        # AES128 10-1 rounds
-        for j in range(1, 10):
-            pass
+    # AES128 10-1 rounds
+    for i in range(1, 10):
+        pass
 
-        # Final round
+    # Final round
 
-
-        states.append(local_states)
-        new_message += new_local_message
 
     return new_message
 
     
 def AEStest():
-    print(SB("36"))
+    k = "2b7e151628aed2a6abf7158809cf4f3c"
+    print(key_generator(k, is_hex=True))
+
+
+def AES(message, key, mode="encode", block_mode="ECB"):
+    pass

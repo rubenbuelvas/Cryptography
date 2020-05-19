@@ -50,14 +50,13 @@ def xor(a, b):
 
 def bin_to_hex(a):
     b = hex(int(a, 2))[2:]
-    if len(b) == 1:
-        b = "0" + b
+    b = ("0"*(int(len(a)/4)-len(b))) + b
     return b
 
 
 def hex_to_bin(a):
     b = bin(int(a, 16))[2:]
-    b = ("0"*(8-len(b))) + b
+    b = ("0"*((len(a)*4)-len(b))) + b
     return b
 
 
