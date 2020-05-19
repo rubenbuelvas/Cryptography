@@ -124,7 +124,15 @@ def SB_key(bytes):
 
 
 def SB1(bytes):
-    return 0
+    new_bytes = np.full((4, 4), "00")
+    sb_matrix = generate_sb_matrix(type="inverse")
+    for i in range(4):
+        for j in range(4):
+            my_byte = bytes.item((i, j))
+            y = util.hex_to_dec(my_byte[0])
+            x = util.hex_to_dec(my_byte[1])
+            new_bytes.itemset((i, j), sb_matrix[y, x])
+    return new_bytes
 
 
 # Shift rows
@@ -141,7 +149,16 @@ def SR(bytes):
 
 
 def SR1(bytes):
-    return 0
+    new_bytes = []
+    bytes = bytes.tolist()
+    for i in range(4):
+        n = len(bytes[i])
+        tmp = bytes[i][(n-i)%4:]
+        for j in range((4-i)%4):
+            tmp.append(bytes[i][j])  
+        new_bytes.append(tmp)
+    new_bytes = np.matrix(new_bytes)
+    return new_bytes
 
 
 # Mix columns
@@ -157,7 +174,14 @@ def MC(bytes):
 
 
 def MC1(bytes):
-    return 0
+    new_bytes = np.full((4, 4), "00")
+    mc_matrix = np.matrix([["0e", "0b", "0d", "09"],
+                           ["09", "0e", "0b", "0d"],
+                           ["0d", "09", "0e", "0b"],
+                           ["0b", "0d", "09", "0e"] 
+    ])
+    new_bytes = matrix_mul(mc_matrix, bytes)
+    return new_bytes
 
 
 # Add Round Key
@@ -261,30 +285,29 @@ def AES128(message, key, mode="encode", mes_is_hex=False, key_is_hex=False):
 
     elif mode == "decode":
 
-        keys.reverse()
-
         # Initial round
-        round_key = matrix_to_text(np.matrix(keys[0:4]).transpose())
+        round_key = matrix_to_text(np.matrix(keys[len(keys)-4:len(keys)]).transpose())
         round_message = ARK(matrix_to_text(message_matrix), round_key)
-        round_message = SB1(last_round_message)
+        round_message = text_to_matrix(round_message).transpose()
         round_message = SR1(round_message)
-        states.append(round_message)
+        round_message = SB1(round_message)
+        states.append(matrix_to_text(round_message))
 
         # AES128 10 rounds
         for i in range(1, 10):
             last_round_message = text_to_matrix(states[i-1])
             last_round_message = last_round_message.transpose()
             round_message = ""
-            round_key = np.matrix(keys[i*4:i*4+4]).transpose()
-            round_message = ARK(matrix_to_text(round_message), matrix_to_text(round_key))
-            round_message = text_to_matrix(round_message)
+            round_key = np.matrix(keys[len(keys)-(i*4)-4:len(keys)-(i*4)]).transpose()
+            round_message = ARK(matrix_to_text(last_round_message), matrix_to_text(round_key))
+            round_message = text_to_matrix(round_message).transpose()
             round_message = MC1(round_message)
-            round_message = SB1(last_round_message)
             round_message = SR1(round_message)
+            round_message = SB1(round_message)
             states.append(matrix_to_text(round_message))
 
         # Final round
-        round_key = matrix_to_text(np.matrix(keys[len(keys)-4:len(keys)]).transpose())
+        round_key = matrix_to_text(np.matrix(keys[:4]).transpose())
         states.append(ARK(states[-1], round_key))
 
     #Converting ascii hex to plaintext if necessary
@@ -294,12 +317,3 @@ def AES128(message, key, mode="encode", mes_is_hex=False, key_is_hex=False):
         new_message = util.ascii_hex_to_str(states[-1])
 
     return new_message
-
-    
-def AEStest():
-    k = "2b7e151628aed2a6abf7158809cf4f3c"
-    print(key_generator(k, is_hex=True))
-
-
-def AES(message, key, mode="encode", block_mode="ECB"):
-    pass
