@@ -247,11 +247,13 @@ def AES128(message, key, mode="encode", mes_is_hex=False, key_is_hex=False):
     states = []
 
     # Getting hex matrix
-    if len(message) < 16:
-        message += "x"*(16-len(message))
     if mes_is_hex:
+        if len(message) < 16:
+            message += "0"*(16-len(message))
         message_hex = message
     else:
+        if len(message) < 32:
+            message += "0"*(32-len(message))
         message_hex = util.str_to_ascii_hex(message)
     message_hex = list(message_hex)
     message_matrix = []
@@ -310,10 +312,29 @@ def AES128(message, key, mode="encode", mes_is_hex=False, key_is_hex=False):
         round_key = matrix_to_text(np.matrix(keys[:4]).transpose())
         states.append(ARK(states[-1], round_key))
 
-    #Converting ascii hex to plaintext if necessary
+    """#Converting ascii hex to plaintext if necessary
     if mes_is_hex:
         new_message = states[-1]
     else:
-        new_message = util.ascii_hex_to_str(states[-1])
+        new_message = util.ascii_hex_to_str(states[-1])"""
+    new_message = states[-1]
 
+    return new_message
+
+
+def ECB(message, key, mode="encode", mes_is_hex=False, key_is_hex=False):
+    new_message = ""
+    sub_messages = []
+    if mes_is_hex:
+        if len(message)%32 != 0:
+            message += "0" * (32-len(message)%32)
+        for i in range(int(len(message)/32)):
+            sub_messages.append(message[i*32:i*32+32])
+    else:
+        if len(message)%16 != 0:
+            message += "0" * (16-len(message)%16)
+        for i in range(int(len(message)/16)):
+            sub_messages.append(message[i*16:i*16+16])
+    for i in range(len(sub_messages)):
+        new_message += AES128(sub_messages[i], key, mode, mes_is_hex, key_is_hex)
     return new_message
