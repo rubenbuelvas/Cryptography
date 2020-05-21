@@ -40,3 +40,19 @@ print(x)
 
 # 5 ECB mode
 
+ecb_m = ECB("AES es un algoritmo muy importante en la seguridad de la informacion actual", "0123456789ABCDEF0123456789ABCDEF", mode="encode", mes_is_hex=False, key_is_hex=True)
+print(ecb_m)
+
+# 6 Pseudo-random number
+
+# 8 Quick exponentiation
+
+n = util.powermod(2, 10, 100001)
+n = util.powermod(n, 15, 100001)
+print(n)
+
+# 9 Discrete logarithm 
+
+log = util.discrete_log(2, 7, 13)
+print(log)
+print(util.powermod(2, 11, 13))

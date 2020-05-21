@@ -90,3 +90,23 @@ def hex_to_dec(a):
     a = "0x" + a
     b = int(a, 16)
     return b
+
+
+def powermod(a, b, n):
+    curr = a%n
+    res = 1
+    while b > 0:
+        if b%2 == 1:
+            res = (res*curr)%n
+        curr = (curr*curr)%n
+        b = int(b/2)
+    return res
+
+
+def discrete_log(a, b, n):
+    ans = -1
+    for i in range(0, n-1):
+        if powermod(a, i, n) == b:
+            ans = i
+            break
+    return ans
