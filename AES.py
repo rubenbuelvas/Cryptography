@@ -338,3 +338,30 @@ def ECB(message, key, mode="encode", mes_is_hex=False, key_is_hex=False):
     for i in range(len(sub_messages)):
         new_message += AES128(sub_messages[i], key, mode, mes_is_hex, key_is_hex)
     return new_message
+
+
+def CBC(message, key, iv, mode="encode", mes_is_hex=False, key_is_hex=False, iv_is_hex=True):
+    new_message = ""
+    sub_messages = []
+    if mes_is_hex:
+        if len(message)%32 != 0:
+            message += "0" * (32-len(message)%32)
+        for i in range(int(len(message)/32)):
+            sub_messages.append(message[i*32:i*32+32])
+    else:
+        if len(message)%16 != 0:
+            message += "0" * (16-len(message)%16)
+        for i in range(int(len(message)/16)):
+            sub_messages.append(util.str_to_ascii_hex(message[i*16:i*16+16]))
+    if not iv_is_hex:
+        iv = util.str_to_ascii_hex(iv)
+    states = []
+    c0 = util.xor_hex(sub_messages[0], iv)
+    c0 = AES128(c0, key, mode, mes_is_hex=True, key_is_hex=key_is_hex)
+    states.append(c0)
+    for i in range(1, len(sub_messages)):
+        ci = util.xor_hex(sub_messages[i], states[i-1])
+        ci = AES128(ci, key, mode, mes_is_hex=True, key_is_hex=key_is_hex)
+        states.append(ci)
+    new_message = "".join(states)
+    return new_message

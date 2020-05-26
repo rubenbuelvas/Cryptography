@@ -92,6 +92,15 @@ def hex_to_dec(a):
     return b
 
 
+def xor_hex(a, b):
+    c = ""
+    a = hex_to_bin(a)
+    b = hex_to_bin(b)
+    c = xor(a, b)
+    c = bin_to_hex(c)
+    return c
+
+
 def powermod(a, b, n):
     curr = a%n
     res = 1
@@ -110,3 +119,4 @@ def discrete_log(a, b, n):
             ans = i
             break
     return ans
+    
