@@ -37,7 +37,7 @@ if __name__ == '__main__':
     message = input('Write your message: ')
     key = int(input('Write your key: '))
     print('-----------------------------------')
-    print('Resultado:')
+    print('Result:')
     print(caesar(message, key, mode))
     print('-----------------------------------')
     pause = input('Press the <ENTER> key to continue...')

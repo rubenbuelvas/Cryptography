@@ -82,7 +82,7 @@ if __name__ == '__main__':
     message = input('Write your message: ')
     key = input('Write your key: ')
     print('-----------------------------------')
-    print('Resultado:')
+    print('Result:')
     print(playfair(message, key, mode))
     print('-----------------------------------')
     pause = input("Press the <ENTER> key to continue...")
