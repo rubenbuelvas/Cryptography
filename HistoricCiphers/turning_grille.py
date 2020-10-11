@@ -20,15 +20,14 @@ def turning_grille(message, key, mode='decode', clock_wise=False):
     if mode == 'encode':
         new_matrix = np.zeros((size, size), dtype=str)
         while len(message) > 0:
-            print(len(message))
             for j in range(size):
                 for k in range(size):
                     if key.item(j, k):
                         new_matrix[j, k] = message.pop(0)
-                if clock_wise:
-                    key = np.rot90(key, k=1, axes=(0, 1))
-                else:
-                    key = np.rot90(key, k=3, axes=(0, 1))
+            if clock_wise:
+                key = np.rot90(key, k=3, axes=(0, 1))
+            else:
+                key = np.rot90(key, k=1, axes=(0, 1))
         for i in range(size):
             for j in range(size):
                 new_message += new_matrix[i][j]
@@ -43,9 +42,9 @@ def turning_grille(message, key, mode='decode', clock_wise=False):
                     if key.item((i, j)):
                         new_message += encoded_matrix[i][j]
             if clock_wise:
-                key = np.rot90(key, k=1, axes=(0, 1))
-            else:
                 key = np.rot90(key, k=3, axes=(0, 1))
+            else:
+                key = np.rot90(key, k=1, axes=(0, 1))
     return new_message
 
 
